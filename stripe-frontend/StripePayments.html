@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Men Ring</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+  <body>
+      <button type="button" id="one-time-checkout-button">One Time Payment Checkout</button>
+      <button type="button" id="subscription-checkout-button">Subscription Checkout</button>
+  </body>
+
+
+<script type="text/javascript">
+
+  $("#one-time-checkout-button").click(function () {
+
+      fetch("http://127.0.0.1:8000/api/stripe/onetimepayment", {
+        method: "POST",
+      })
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (session) {
+          var stripe = Stripe(session.Data.PublishKey);
+          return stripe.redirectToCheckout({ sessionId: session.Data.SessionId });
+        })
+        .then(function (result) {
+          if (result.error) {
+            alert(result.error.message);
+          }
+        })
+        .catch(function (error) {
+          console.error("Error:", error);
+        });
+    });
+
+    $("#subscription-checkout-button").click(function () {
+
+      fetch("http://127.0.0.1:8000/api/stripe/subscription", {
+        method: "POST",
+      })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (session) {
+        var stripe = Stripe(session.Data.PublishKey);
+        return stripe.redirectToCheckout({ sessionId: session.Data.SessionId });
+      })
+      .then(function (result) {
+        if (result.error) {
+          alert(result.error.message);
+        }
+      })
+      .catch(function (error) {
+        console.error("Error:", error);
+      });
+  });
+
+</script>
+
+</html>
